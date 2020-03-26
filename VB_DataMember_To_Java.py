@@ -43,6 +43,10 @@ class VBParser:
                         self.parsed_contents.append("}")
                     continue
 
+                as_index = line.lower().find(" as ")
+                if as_index != -1:
+                    line = line[:as_index].strip()
+
                 words = line.split(' ')
                 line = [x.lower() for x in words[:-1]]
                 type_names.append(words[-1])
