@@ -4,13 +4,10 @@ import clipboard
 
 
 class VBParser:
-    parsed_contents = []
-    un_parsed_contents = []
-    parse_type = "console"
-
     def __init__(self, parse_type, contents_to_parse):
         self.parse_type = parse_type
         self.un_parsed_contents = contents_to_parse
+        self.parsed_contents = []
 
     def parse_file(self):
         with open(self.un_parsed_contents, 'r') as file:
@@ -128,7 +125,7 @@ if __name__ == "__main__":
     if parse_type == "-dir":
         items_to_parse = [{'parse_type': "-file", 'content_to_parse': os.path.join(content_to_parse, x),
                            'output_type': output_type,
-                           'output_path': os.path.join(output_path, os.path.basename(x).replace(".vb", ".java"))}
+                           'output_path': os.path.join(output_path, os.path.basename(x)[2:].replace(".vb", ".java"))}
                           for x in os.listdir(content_to_parse)]
     else:
         items_to_parse = [{'parse_type': parse_type, 'content_to_parse': content_to_parse, 'output_type': output_type,
