@@ -24,16 +24,28 @@ class VBParser:
 
     def parse_contents(self):
         parse_data_member = False
+        parse_enum = False
+        type_names = []
         for line in self.un_parsed_contents:
             if line.strip().startswith('\''):
                 continue
-            elif line.find("Class") != -1:
-                if line.find("End Class") != -1:
-                    self.parsed_contents.append("}")
+            elif line.find("Class") != -1 or line.find(" Enum") != -1:
+                if line.find("End Class") != -1 or line.find("End Enum") != -1:
+                    if line.find("End Enum") != -1:
+                        enum_boilerplate = '\n\t\t'.join([
+                            '\n\t\tprivate int value;\n',
+                            f'{type_names[-1]} (int value) {{\n\t\t\tthis.value = value;\n\t\t}}',
+                            '\n\t\tpublic int asInt() {\n\t\t\treturn this.value;\n\t\t}'
+                        ])
+                        self.parsed_contents.append(enum_boilerplate)
+                        self.parsed_contents.append("\t}\n")
+                    else:
+                        self.parsed_contents.append("}")
                     continue
 
                 words = line.split(' ')
                 line = [x.lower() for x in words[:-1]]
+                type_names.append(words[-1])
                 line.append(words[-1])
                 line.append('{')
                 line = ' '.join(line)
@@ -41,9 +53,16 @@ class VBParser:
             elif line.find('DataMember()') != -1:
                 parse_data_member = True
                 continue
+            elif line.find('EnumMember()') != -1:
+                parse_enum = True
+                continue
             elif parse_data_member:
                 parse_data_member = False
                 self.parse_data_member(line)
+            elif parse_enum:
+                parse_enum = False
+                words = [x.strip() for x in line.split('=')]
+                self.parsed_contents.append(f"\t\t{words[0]}({words[1]}),")
 
         self.parsed_contents = '\n'.join(self.parsed_contents)
 
