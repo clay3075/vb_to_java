@@ -139,8 +139,9 @@ if __name__ == "__main__":
     parse_type = sys.argv[1]
     content_to_parse = sys.argv[2]
 
-    if arg_count == 5:
+    if arg_count >= 4:
         output_type = sys.argv[3][1:]
+    if arg_count >= 5:
         output_path = sys.argv[4]
 
     items_to_parse = [{}]
